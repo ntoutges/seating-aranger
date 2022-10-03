@@ -5,7 +5,7 @@ Puts people into "pods" of 4 people, and for each generation (new line) ensures 
 - Java Dumb Object Notation
 - A simpler version of JSON
 - Format:
-  * <key>: <value> // <comment>
+  * \<key\>: \<value\> // \<comment\>
   * key: name of the value
   * value: self explanatory
 - Unlike JSON, JDON supports comments!
