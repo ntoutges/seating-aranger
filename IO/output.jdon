@@ -1,7 +1,0 @@
-// JDON: Java Dumb Object Notation
-fill: spread        // spread | fill | consecutive
-debug: 1            // 0 = no debug | 1 = debug
-filter: all         // all | fast
-include_lookback: 1 // amount of input.csv lines that will be included in output.csv
-auto_feedback: 0    // 0 = no | 1 = yes, feed output file into input
-random_pods: 1       // randomize where pods are
