@@ -6,13 +6,18 @@ class Main {
   public static void main(String[] args) {
     try {
       Options opt = new Options("options.jdon",
-          new String[] { "fill", "debug", "filter", "include_lookback", "random_pods" });
+          new String[] { "fill", "debug", "filter", "include_lookback", "random_pods", "vertical" });
       boolean debug = opt.getProp("debug").equals("1");
-      String[] input = IO.read("input.csv");
-
+      String[][] input = new String[][]{};
+      boolean verticalOut = opt.getProp("vertical").equals("1");
+      if (verticalOut)
+        input = Format.horizontalToVerticalCSV(IO.read("input.csv"));
+      else
+        input = Format.horizontalToHorizontalCSV(IO.read("input.csv"));
+      
       ArrayList<Generation> inputGens = new ArrayList<Generation>();
       for (int i = 0; i < input.length; i++) {
-        String[] genStr = input[i].split(",", -1);
+        String[] genStr = input[i];
         Generation gen = new Generation(genStr);
         gen.assignConsecutive();
         inputGens.add(gen);
@@ -58,16 +63,17 @@ class Main {
         gens = Filter.findSubOptimalCombination(allGenerations, inputGens);
       }
 
+      String plural = gens.size() == 1 ? "" : "s";
       if (gens.size() != 0)
-        System.out.println("Done! Found " + String.valueOf(gens.size()) + " compatible generations.");
+        System.out.println("Done! Found " + String.valueOf(gens.size()) + " compatible generation" + plural + ".");
       else
         System.out
             .println("Unable to find any compatible generations. Try removing some restricting lines from the input.");
 
       if (gens.size() < 3)
-        System.out.println("Try adding an empty \'(,,,,)\' to input.csv to increase the amount of results");
+        System.out.println("Try adding some empty seats (nameless \"students\") to input.csv to increase the amount of results");
 
-      String saveStr = "";
+      ArrayList<String> saveStrs = new ArrayList<String>();
       if (!opt.getProp("include_lookback").equals("0") && !opt.getProp("include_lookback").equals("null")) {
         int lookback = Integer.parseInt(opt.getProp("include_lookback"));
 
@@ -75,7 +81,10 @@ class Main {
           int j = inputGens.size() - i - 1;
           if (j < 0)
             break;
-          saveStr += inputGens.get(j).toCSV(false) + "\n";
+          if (verticalOut)
+            saveStrs.add(inputGens.get(j).toVerticalCSV(false));
+          else
+            saveStrs.add(inputGens.get(j).toCSV(false));
         }
       }
 
@@ -86,12 +95,23 @@ class Main {
           System.out.println(gens.get(i).toGrid());
         }
         if (randomPods)
-          saveStr += gens.get(i).toRandCSV(false) + "\n";        
+          if (verticalOut)
+            saveStrs.add(gens.get(i).toRandVerticalCSV(false));
+          else
+            saveStrs.add(gens.get(i).toRandCSV(false));
+        else if (verticalOut)
+          saveStrs.add(gens.get(i).toVerticalCSV(false));
         else
-          saveStr += gens.get(i).toCSV(false) + "\n";
+          saveStrs.add(gens.get(i).toCSV(false));
       }
+
+      String saveStr = "";
+      if (verticalOut)
+        saveStr = Format.combineVerticalCSV(saveStrs);
+      else
+        saveStr = Format.combineHorizontalCSV(saveStrs);
       IO.save(saveStr);
-      if (opt.getProp("auto_feedback") == "1")
+      if (opt.getProp("auto_feedback").equals("1"))
         IO.save(saveStr, "input.csv");
     } catch (Exception e) {
       System.out.println(e.toString());
