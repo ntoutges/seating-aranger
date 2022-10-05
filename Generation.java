@@ -266,6 +266,41 @@ class Generation { // multiple pods
     return toRandCSV(true);
   }
 
+  String toVerticalCSV(boolean nameNulls) {
+    String podCSVs = "";
+    for (int i = 0; i < this.pods.length; i++) {
+      if (i != 0)
+        podCSVs += "\n";
+      podCSVs += this.pods[i].toVerticalCSV(nameNulls);
+    }
+    return podCSVs;
+  }
+  
+  String toverticalCSV() {
+    return toVerticalCSV(true);
+  }
+
+  String toRandVerticalCSV(boolean nameNulls) {
+    String podCSVs = "";
+    HashMap<Integer,Boolean> blacklist = new HashMap<Integer,Boolean>();
+    Random random = new Random();
+    for (int i = 0; i < this.pods.length; i++) {
+      int index = -1;
+      while (blacklist.containsKey(index) || index == -1) {
+        index = random.nextInt(this.pods.length);
+      }
+      blacklist.put(index, true);
+      if (i != 0)
+        podCSVs += "\n";
+      podCSVs += this.pods[index].toVerticalCSV(nameNulls);
+    }
+    return podCSVs;
+  }
+
+  String toRandVerticalCSV() {
+    return toRandCSV(true);
+  }
+
   String toGrid() {
     String podGrid = "";
     for (int i = 0; i < this.pods.length; i++) {
