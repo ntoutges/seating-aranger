@@ -43,12 +43,28 @@ class Pod {
       if (students[i].equals("")) // no student stored
         names += (nameNulls) ? "null" : "";
       else
-        names += students[i];
+        names += "\"" + students[i] + "\"";
     }
     return names;
   }
 
   String toCSV() {
+    return this.toCSV(true);
+  }
+
+  String toVerticalCSV(boolean nameNulls) {
+    String names = "";
+    for (int i = 0; i < students.length; i++) {
+      if (i != 0)
+        names += "\n";
+      if (students[i].equals("")) // no student stored
+        names += (nameNulls) ? "null" : "";
+      else
+        names += "\"" + students[i] + "\"";
+    }
+    return names;
+  }
+  String toVerticalCSV() {
     return this.toCSV(true);
   }
 }
